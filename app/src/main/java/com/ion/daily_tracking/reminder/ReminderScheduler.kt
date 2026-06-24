@@ -26,10 +26,11 @@ class ReminderScheduler(private val context: Context) {
         cancel(item)
         if (!item.reminderEnabled || !item.hasTime) return
         val triggerAt = nextTriggerMillis(item) ?: return
+        val pending = pendingIntent(item, create = true) ?: return
         alarmManager.setAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
             triggerAt,
-            pendingIntent(item, create = true),
+            pending,
         )
     }
 

@@ -12,9 +12,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -63,11 +63,11 @@ fun ScheduleScreen(
                 },
                 actions = {
                     IconButton(onClick = { viewModel.shiftDay(-1) }) {
-                        Icon(Icons.Filled.KeyboardArrowLeft, contentDescription = "Previous day")
+                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Previous day")
                     }
                     TextButton(onClick = { viewModel.goToToday() }) { Text("Today") }
                     IconButton(onClick = { viewModel.shiftDay(1) }) {
-                        Icon(Icons.Filled.KeyboardArrowRight, contentDescription = "Next day")
+                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "Next day")
                     }
                 },
             )

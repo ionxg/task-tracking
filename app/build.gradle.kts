@@ -44,6 +44,8 @@ android {
 
 dependencies {
     implementation(libs.androidx.core.ktx)
+    // Provides the Material3 XML theme used as the app/activity launch theme.
+    implementation(libs.material)
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))
