@@ -26,6 +26,12 @@ class ScheduleRepository(
             items.map { TrackedItem(it, it.id in done) }
         }
 
+    fun history(): Flow<List<HistoryEntry>> = dao.observeHistory()
+
+    fun completionDays(): Flow<List<Long>> = dao.observeCompletionDays()
+
+    fun totalCompletions(): Flow<Int> = dao.observeTotalCompletions()
+
     suspend fun getItem(id: Long): ScheduleItem? = dao.getItem(id)
 
     suspend fun save(item: ScheduleItem): ScheduleItem {

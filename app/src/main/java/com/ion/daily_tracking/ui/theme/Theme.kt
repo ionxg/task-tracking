@@ -1,42 +1,54 @@
 package com.ion.daily_tracking.ui.theme
 
-import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 
 private val DarkColors = darkColorScheme(
-    primary = Indigo80,
-    secondary = IndigoGrey80,
-    tertiary = Teal80,
+    primary = SagePrimaryDark,
+    onPrimary = SageOnPrimaryDark,
+    primaryContainer = SagePrimaryContainerDark,
+    onPrimaryContainer = SageOnPrimaryContainerDark,
+    secondary = SlateSecondaryDark,
+    secondaryContainer = SlateSecondaryContainerDark,
+    onSecondaryContainer = SlateOnSecondaryContainerDark,
+    tertiary = LavenderTertiaryDark,
+    tertiaryContainer = LavenderTertiaryContainerDark,
+    onTertiaryContainer = LavenderOnTertiaryContainerDark,
+    background = DarkBackground,
+    surface = DarkSurface,
+    surfaceVariant = DarkSurfaceVariant,
+    onSurface = DarkOnSurface,
+    onSurfaceVariant = DarkOnSurfaceVariant,
 )
 
 private val LightColors = lightColorScheme(
-    primary = Indigo40,
-    secondary = IndigoGrey40,
-    tertiary = Teal40,
+    primary = SagePrimary,
+    onPrimary = SageOnPrimary,
+    primaryContainer = SagePrimaryContainer,
+    onPrimaryContainer = SageOnPrimaryContainer,
+    secondary = SlateSecondary,
+    secondaryContainer = SlateSecondaryContainer,
+    onSecondaryContainer = SlateOnSecondaryContainer,
+    tertiary = LavenderTertiary,
+    tertiaryContainer = LavenderTertiaryContainer,
+    onTertiaryContainer = LavenderOnTertiaryContainer,
+    background = LightBackground,
+    surface = LightSurface,
+    surfaceVariant = LightSurfaceVariant,
+    onSurface = LightOnSurface,
+    onSurfaceVariant = LightOnSurfaceVariant,
 )
 
 @Composable
 fun DailyTrackingTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit,
 ) {
-    val context = LocalContext.current
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-        darkTheme -> DarkColors
-        else -> LightColors
-    }
+    // Fixed calm palette (no dynamic color) so the look is consistent across devices.
+    val colorScheme = if (darkTheme) DarkColors else LightColors
 
     MaterialTheme(
         colorScheme = colorScheme,

@@ -25,6 +25,26 @@ interface ScheduleDao {
     @Query("SELECT itemId FROM completions WHERE epochDay = :day")
     fun observeCompletionsForDay(day: Long): Flow<List<Long>>
 
+    /** Every completed activity, newest first — the profile history log. */
+    @Query(
+        """
+        SELECT i.title AS title, c.epochDay AS epochDay, i.startMinute AS startMinute,
+               i.repeating AS repeating
+        FROM completions c
+        INNER JOIN schedule_items i ON i.id = c.itemId
+        ORDER BY c.epochDay DESC, i.startMinute
+        """
+    )
+    fun observeHistory(): Flow<List<HistoryEntry>>
+
+    /** Distinct days on which anything was completed, newest first — used for streaks. */
+    @Query("SELECT DISTINCT epochDay FROM completions ORDER BY epochDay DESC")
+    fun observeCompletionDays(): Flow<List<Long>>
+
+    /** Total number of completions ever recorded. */
+    @Query("SELECT COUNT(*) FROM completions")
+    fun observeTotalCompletions(): Flow<Int>
+
     @Query("SELECT * FROM schedule_items WHERE id = :id")
     suspend fun getItem(id: Long): ScheduleItem?
 

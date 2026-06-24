@@ -1,5 +1,7 @@
 package com.ion.daily_tracking.ui
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +24,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -48,6 +51,8 @@ fun ScheduleScreen(
 ) {
     val items by viewModel.items.collectAsStateWithLifecycle()
     val day by viewModel.selectedDay.collectAsStateWithLifecycle()
+
+    val doneCount = items.count { it.done }
 
     Scaffold(
         topBar = {
@@ -91,14 +96,40 @@ fun ScheduleScreen(
                 ),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
+                item {
+                    DayProgress(done = doneCount, total = items.size)
+                }
                 items(items, key = { it.item.id }) { tracked ->
                     ActivityRow(
                         tracked = tracked,
                         onToggle = { viewModel.toggleDone(tracked) },
                         onClick = { onEditItem(tracked.item.id) },
+                        modifier = Modifier.animateItem(),
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun DayProgress(done: Int, total: Int) {
+    val progress = if (total == 0) 0f else done.toFloat() / total
+    val animated by animateFloatAsState(targetValue = progress, label = "dayProgress")
+    Card(
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+    ) {
+        Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+            Text(
+                text = if (done == total) "All done — nice work! 🎉" else "$done of $total done",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
+            )
+            LinearProgressIndicator(
+                progress = { animated },
+                modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
+            )
         }
     }
 }
@@ -108,15 +139,19 @@ private fun ActivityRow(
     tracked: TrackedItem,
     onToggle: () -> Unit,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val item = tracked.item
+    val containerColor by animateColorAsState(
+        targetValue = if (tracked.done)
+            MaterialTheme.colorScheme.surfaceVariant
+        else MaterialTheme.colorScheme.surface,
+        label = "rowColor",
+    )
     Card(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(
-            containerColor = if (tracked.done)
-                MaterialTheme.colorScheme.surfaceVariant
-            else MaterialTheme.colorScheme.surface,
-        ),
+        modifier = modifier.fillMaxWidth().clickable(onClick = onClick),
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(containerColor = containerColor),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(12.dp),
