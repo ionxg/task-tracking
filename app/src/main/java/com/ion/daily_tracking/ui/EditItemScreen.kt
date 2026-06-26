@@ -123,19 +123,35 @@ fun EditItemScreen(
             Text("Type", style = MaterialTheme.typography.labelLarge)
             SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
                 SegmentedButton(
-                    selected = !repeating,
-                    onClick = { repeating = false },
-                    shape = SegmentedButtonDefaults.itemShape(0, 2),
-                ) { Text("One-off task") }
+                    selected = !repeating && !carryOver,
+                    onClick = { repeating = false; carryOver = false },
+                    shape = SegmentedButtonDefaults.itemShape(0, 3),
+                ) { Text("One-off") }
+                SegmentedButton(
+                    selected = carryOver,
+                    onClick = { carryOver = true; repeating = false },
+                    shape = SegmentedButtonDefaults.itemShape(1, 3),
+                ) { Text("Until done") }
                 SegmentedButton(
                     selected = repeating,
-                    onClick = { repeating = true },
-                    shape = SegmentedButtonDefaults.itemShape(1, 2),
-                ) { Text("Daily habit") }
+                    onClick = { repeating = true; carryOver = false },
+                    shape = SegmentedButtonDefaults.itemShape(2, 3),
+                ) { Text("Daily") }
+            }
+
+            if (carryOver) {
+                Text(
+                    "Stays on your list every day from its start date until you tick it off.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
 
             if (!repeating) {
-                FieldRow(label = "Date", value = formatDayHeading(epochDay)) {
+                FieldRow(
+                    label = if (carryOver) "Start date" else "Date",
+                    value = formatDayHeading(epochDay),
+                ) {
                     picker = Picker.DATE
                 }
             }
@@ -184,6 +200,7 @@ fun EditItemScreen(
                         repeating = repeating,
                         epochDay = if (repeating) null else epochDay,
                         reminderEnabled = reminderEnabled && startMinute != null,
+                        carryOver = carryOver,
                     )
                     viewModel.save(item)
                     onDone()

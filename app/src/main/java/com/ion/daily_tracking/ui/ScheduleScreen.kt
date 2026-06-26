@@ -102,6 +102,7 @@ fun ScheduleScreen(
                 items(items, key = { it.item.id }) { tracked ->
                     ActivityRow(
                         tracked = tracked,
+                        day = day,
                         onToggle = { viewModel.toggleDone(tracked) },
                         onClick = { onEditItem(tracked.item.id) },
                         modifier = Modifier.animateItem(),
@@ -137,6 +138,7 @@ private fun DayProgress(done: Int, total: Int) {
 @Composable
 private fun ActivityRow(
     tracked: TrackedItem,
+    day: Long,
     onToggle: () -> Unit,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -177,13 +179,19 @@ private fun ActivityRow(
                     )
                 }
             }
-            if (item.repeating) {
+            val tag = when {
+                item.repeating -> "Daily"
+                item.carryOver && !tracked.done && (item.epochDay ?: day) < day -> "Carried over"
+                item.carryOver -> "Until done"
+                else -> null
+            }
+            if (tag != null) {
                 Surface(
                     color = MaterialTheme.colorScheme.tertiaryContainer,
                     shape = MaterialTheme.shapes.small,
                 ) {
                     Text(
-                        text = "Daily",
+                        text = tag,
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onTertiaryContainer,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
