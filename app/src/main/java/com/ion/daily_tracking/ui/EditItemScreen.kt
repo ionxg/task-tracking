@@ -59,6 +59,7 @@ fun EditItemScreen(
     var title by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
     var repeating by remember { mutableStateOf(false) }
+    var carryOver by remember { mutableStateOf(false) }
     var epochDay by remember { mutableLongStateOf(viewedDay) }
     var startMinute by remember { mutableStateOf<Int?>(null) }
     var endMinute by remember { mutableStateOf<Int?>(null) }
@@ -74,6 +75,7 @@ fun EditItemScreen(
                 title = item.title
                 notes = item.notes
                 repeating = item.repeating
+                carryOver = item.carryOver
                 epochDay = item.epochDay ?: viewedDay
                 startMinute = item.startMinute.takeIf { it in 0..1439 }
                 endMinute = item.endMinute.takeIf { it in 0..1439 }
