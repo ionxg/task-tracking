@@ -11,11 +11,23 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ScheduleDao {
 
-    /** Items relevant to a given day: every repeating habit plus one-off tasks dated that day. */
+    /**
+     * Items relevant to a given day:
+     *  - every repeating habit,
+     *  - one-off tasks dated exactly that day,
+     *  - "until done" tasks that started on or before that day and have not yet been completed on an
+     *    earlier day (so they keep rolling forward until ticked off, then drop away the next day).
+     */
     @Query(
         """
         SELECT * FROM schedule_items
-        WHERE repeating = 1 OR epochDay = :day
+        WHERE repeating = 1
+           OR (carryOver = 0 AND epochDay = :day)
+           OR (carryOver = 1 AND epochDay <= :day
+               AND NOT EXISTS (
+                   SELECT 1 FROM completions c
+                   WHERE c.itemId = schedule_items.id AND c.epochDay < :day
+               ))
         ORDER BY (startMinute < 0), startMinute, title
         """
     )
