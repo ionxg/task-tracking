@@ -44,13 +44,23 @@ class ReminderScheduler(private val context: Context) {
         val zone = ZoneId.systemDefault()
         val now = LocalDateTime.now()
 
-        val dateTime = if (item.repeating) {
-            val today = LocalDate.now().atTime(time)
-            if (today.isAfter(now)) today else today.plusDays(1)
-        } else {
-            val day = item.epochDay ?: return null
-            val at = LocalDate.ofEpochDay(day).atTime(time)
-            if (at.isAfter(now)) at else return null
+        val dateTime = when {
+            item.repeating -> {
+                val today = LocalDate.now().atTime(time)
+                if (today.isAfter(now)) today else today.plusDays(1)
+            }
+            item.carryOver -> {
+                // "Until done" task: nag at the start time from its start date onward.
+                val start = LocalDate.ofEpochDay(item.epochDay ?: return null)
+                val base = if (start.isAfter(LocalDate.now())) start else LocalDate.now()
+                val at = base.atTime(time)
+                if (at.isAfter(now)) at else base.plusDays(1).atTime(time)
+            }
+            else -> {
+                val day = item.epochDay ?: return null
+                val at = LocalDate.ofEpochDay(day).atTime(time)
+                if (at.isAfter(now)) at else return null
+            }
         }
         return dateTime.atZone(zone).toInstant().toEpochMilli()
     }
